@@ -9,6 +9,14 @@ export default function Index() {
           <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div className="relative shadow-xl sm:overflow-hidden sm:rounded-2xl">
               <div className="absolute inset-0">
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://github.com/jose-donato/race-stack"
+                  className="absolute z-20 top-4 right-4 text-white text-sm font-medium bg-orange-500 rounded-md px-3 py-1 hover:bg-orange-600"
+                >
+                  Check on GitHub
+                </a>
                 <div
                   style={{
                     backgroundImage:

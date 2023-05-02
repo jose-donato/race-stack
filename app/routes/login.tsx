@@ -13,6 +13,7 @@ import { z } from "zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { InputForm } from "@/components/ui/inputForm";
 import { authenticator } from "@/lib/auth.server";
+import { authSessionStorage, flashSession } from "@/lib/cookie.server";
 
 export const validator = withZod(
   z.object({
@@ -31,14 +32,44 @@ export async function action({ request, context }: ActionArgs) {
     return validationError(result.error);
   }
 
-  return await authenticator.authenticate("form", request, {
-    successRedirect: "/app",
-    failureRedirect: "/login?error=invalid-credentials",
-    context: {
-      formData,
-      context,
-    },
-  });
+  const cookieHeader = request.headers.get("Cookie");
+  const fSession = await flashSession.getSession(cookieHeader);
+  let user = null;
+  try {
+    user = await authenticator.authenticate("form", request, {
+      context: {
+        formData,
+        request,
+        context,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  if (user) {
+    const session = await authSessionStorage.getSession(
+      cookieHeader
+    );
+
+    session.set("user", user);
+    session.set("strategy", "form");
+    return redirect("/app", {
+      headers: {
+        "Set-Cookie": await authSessionStorage.commitSession(session),
+      },
+    });
+  } else {
+    fSession.flash("toast", {
+      variant: "destructive",
+      title: "Uh oh! Login failed.",
+      description: "Please check your email and password and try again.",
+    });
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await flashSession.commitSession(fSession),
+      },
+    });
+  }
 }
 
 export default function Index() {
@@ -58,7 +89,7 @@ export default function Index() {
 
   const actionData = useActionData<typeof action>();
   return (
-    <div className="min-h-screen container relative hidden flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
+    <div className="min-h-screen container relative flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
       <Link
         className="inline-flex items-center justify-center text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background hover:bg-accent hover:text-accent-foreground h-9 px-3 rounded-md absolute right-4 top-4 md:right-8 md:top-8"
         to="/register"
@@ -88,7 +119,7 @@ export default function Index() {
           </blockquote>
         </div>
       </div>
-      <div className="lg:p-8">
+      <div className="p-8 pt-14 lg:pt-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">
