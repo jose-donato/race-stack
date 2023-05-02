@@ -14,6 +14,7 @@ npx create-remix@latest --template jose-donato/race-stack
 - [Cloudflare D1](https://developers.cloudflare.com/d1/) and [Drizzle ORM](https://github.com/drizzle-team/drizzle-orm) for database
 - Email/Password Authentication with [remix-auth](https://github.com/sergiodxa/remix-auth) - easily extensible to other auth providers like github, google etc.
 - Styling with [Tailwind](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com), [Radix-UI](https://radix-ui.com/), and [Lucide Icons](https://lucide.dev/)
+- Dark mode using cookies
 - [Posthog](https://posthog.com/) for analytics, can be easily changed to another analytics provider. Analytics are only imported when user opts in.
 - Form validation with [remix-validation-form](https://www.remix-validated-form.io/) and [zod](https://zod.dev/)
 - Code formatting with [Prettier](https://prettier.io)
