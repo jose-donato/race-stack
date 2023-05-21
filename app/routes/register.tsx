@@ -1,21 +1,19 @@
-import { Github, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ActionArgs,
-  LoaderArgs,
   redirect,
 } from "@remix-run/cloudflare";
-import { getDbFromContext, getUsers } from "@/lib/db.service.server";
-import { Input } from "@/components/ui/input";
+import { getDbFromContext } from "@/lib/db.service.server";
 import { Label } from "@/components/ui/label";
-import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
+import { Link, useActionData, useNavigation } from "@remix-run/react";
 import { withZod } from "@remix-validated-form/with-zod";
 import { z } from "zod";
 import { ValidatedForm, validationError } from "remix-validated-form";
 import { InputForm } from "@/components/ui/inputForm";
-import { NewUser, User, users } from "@/lib/schema";
 import { hash } from "@/lib/passwordHashing.server";
 import { generateRandomLinearGradient } from "@/lib/utils";
+import { users } from "@/lib/schema";
 
 export const validator = withZod(
   z
@@ -43,7 +41,7 @@ export async function action({ request, context }: ActionArgs) {
   const hashedPassword = await hash({
     password: result.data.password,
   });
-  const newUser: NewUser = {
+  const newUser = {
     email: result.data.email,
     password: hashedPassword,
     avatar: generateRandomLinearGradient(),

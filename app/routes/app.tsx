@@ -38,6 +38,9 @@ export async function loader({ request, context }: LoaderArgs) {
   if (!user) {
     return redirect("/login");
   }
+
+  //const teams = await db.query 
+
   const userTeams = await db
     .select({
       id: teams.id,
